@@ -22,21 +22,21 @@ call %ANTBUILD_HOME%setenv.bat
 set ANT_HOME=%ANTBUILD_HOME$
 
 @REM  Set the classpath
-set ANT_CLASSPATH=%JDK_HOME%\jre\lib\rt.jar
+set ANT_CLASSPATH="%JDK_HOME%\jre\lib\rt.jar"
 set ANT_CLASSPATH=%ANT_CLASSPATH%;%ANTBUILD_HOME%lib\*
-set ANT_CLASSPATH=%ANT_CLASSPATH%;%JDK_HOME%\lib\tools.jar
+set ANT_CLASSPATH=%ANT_CLASSPATH%;"%JDK_HOME%\lib\tools.jar"
 
 set ANT_ARGS=-Dant.home=%ANT_HOME%
 set ANT_ARGS=%ANT_ARGS% -Dlog4j.configuration="file:%ANTBUILD_HOME%\log4j.config"
 @REM set ANT_ARGS=%ANT_ARGS% -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
 
-@@REM GC Options: -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps 
+@@REM GC Options: -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps
 set JVM_ARGS=-ms16m -mx1024m -server -XX:MaxPermSize=256m -XX:+UseParallelGC -XX:MaxHeapFreeRatio=20 -XX:MinHeapFreeRatio=10 -XX:CompileThreshold=100
 
 set PATH=%ANTBUILD_HOME%\build\bin;%PATH%
 
 echo on
-%JDK_HOME%\jre\bin\java %JVM_ARGS% -classpath %ANT_CLASSPATH% %ANT_ARGS% org.apache.tools.ant.launch.Launcher -listener org.apache.tools.ant.listener.Log4jListener -f %1 %2 %3 %4 %5 %6 %7 %8
+"%JDK_HOME%\jre\bin\java" %JVM_ARGS% -classpath %ANT_CLASSPATH% %ANT_ARGS% org.apache.tools.ant.launch.Launcher -listener org.apache.tools.ant.listener.Log4jListener -f %1 %2 %3 %4 %5 %6 %7 %8
 @echo off
 
 endlocal

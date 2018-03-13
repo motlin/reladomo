@@ -18,8 +18,8 @@ setlocal
 
 mkdir %RELADOMO_HOME%\libboot\target\classes
 
-%JDK_HOME%\bin\javac -d %RELADOMO_HOME%\libboot\target\classes %RELADOMO_HOME%\libboot\src\main\java\org\libboot\Libboot.java
+"%JDK_HOME%\bin\javac" -d %RELADOMO_HOME%\libboot\target\classes %RELADOMO_HOME%\libboot\src\main\java\org\libboot\Libboot.java
 
 cd %RELADOMO_HOME%
-%JDK_HOME%\bin\java -cp %RELADOMO_HOME%\libboot\target\classes org.libboot.Libboot download build\buildlib.spec build\repos.txt
+"%JDK_HOME%\bin\java" -cp %RELADOMO_HOME%\libboot\target\classes org.libboot.Libboot download build\buildlib.spec build\repos.txt
 
