@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # uncomment next line and set to your local jdk
-#export RELADOMO_JDK_HOME=/opt/jdk1.6.0_45
+export RELADOMO_JDK_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home
 
 # no need to modify stuff below:
 
