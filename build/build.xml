@@ -15,12 +15,12 @@
   -->
 <!--Portions copyright Hiroshi Ito. Licensed under Apache 2.0 license-->
 
-<project name="reladomo" default="all" xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="reladomo" default="all" xmlns:jacoco="antlib:org.jacoco.ant" basedir="..">
     <property environment="env"/>
     <property name="jdk.home" value="${env.JDK_HOME}"/>
-    <property name="root" value="${env.RELADOMO_HOME}"/>
+    <property name="root" value="${basedir}"/>
     <!--todo: remove-->
-    <property name="mithra.home" value="${env.RELADOMO_HOME}/reladomo"/>
+    <property name="mithra.home" value="${basedir}/reladomo"/>
     <property name="mithra.generateGscListMethod" value="false"/>
     <property name="mithra.generateEcListMethod" value="true"/>
 
