@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-util-classes" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/src/main/grammar" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/src/main/reladomo-xml" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/src/main/xsd" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/src/test/reladomo-xml" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/src/test/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomogen/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomogen/src/main/templates" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomogen/src/main/xsd" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomogenutil/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomogenutil/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libboot/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/target/test-generated-onheap-src" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/target/generated-src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomoserial/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomoserial/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomogen/target/generated-src" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/reladomo/src/test-util/java" isTestSource="true" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="build-lib" level="project" />
+    <orderEntry type="library" name="compile" level="project" />
+    <orderEntry type="library" scope="TEST" name="test" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/reladomo/target/test-util-classes" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/reladomo/target/classes" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/reladomo/src/test/resources" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="serial" level="project" />
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/reladomo/target/test-classes-offheap" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/reladomoserial/target/classes" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/reladomoserial/target/test-classes" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>
