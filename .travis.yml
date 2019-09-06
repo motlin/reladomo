@@ -13,10 +13,6 @@ script:
   - export RELADOMO_TEST_THREADS=1
   - build/build.sh compile-reladomo-test compile-reladomo-xa-test
 
-branches:
-  only:
-  - master
-
 git:
   depth: 3
 
