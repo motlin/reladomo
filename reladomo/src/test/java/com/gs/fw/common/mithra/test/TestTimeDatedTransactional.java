@@ -61,6 +61,8 @@ public class TestTimeDatedTransactional extends MithraTestAbstract
     public void testToString()
     {
         AlarmDatedTransactionalList alarmList = new AlarmDatedTransactionalList(AlarmDatedTransactionalFinder.all());
+        alarmList.addOrderBy(AlarmDatedTransactionalFinder.id().ascendingOrderBy());
+
         assertEquals("10:30:59.011", alarmList.get(0).getTime().toString());
         assertEquals("03:11:23.000", alarmList.get(1).getTime().toString());
         assertEquals("14:59:10.043", alarmList.get(2).getTime().toString());

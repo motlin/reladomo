@@ -295,4 +295,9 @@ public interface DatabaseType extends CommonDatabaseType
     public boolean canCombineOptimisticWithBatchUpdates();
 
     boolean varBinaryHasLength();
+
+    default boolean shouldCreateTestIndexes() 
+    { 
+        return true; 
+    }
 }

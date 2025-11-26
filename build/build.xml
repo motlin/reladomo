@@ -1391,6 +1391,11 @@
                     driver="org.mariadb.jdbc.Driver"
                     url="jdbc:mariadb://${maria_hostname}:${maria_port}/${maria_databaseName}" schema="${maria_schemaName}"
                           includeTables="ALL_TYPES, IDENTITY_TABLE, PRODUCT, TEST_BALANCE_NO_ACMAP, ORDERS, ORDER_ITEM, BIG_ORDERS"/>
+        <mkdir dir ="${root}/reladomogenutil/target/reverse/snowflake"/>
+        <reladomo-gen-xml userName="${snowflake_user}" password="${snowflake_password}" databaseType="snowflake" outputDir="${root}/reladomogenutil/target/reverse/snowflake"
+                    driver="net.snowflake.client.jdbc.SnowflakeDriver"
+                    url="jdbc:snowflake://${snowflake_account}.snowflakecomputing.com/?db=${snowflake_database}&amp;schema=${snowflake_schema}&amp;warehouse=${snowflake_warehouse}" 
+                    schema="${snowflake_schema}" includeTables="ALL_TYPES, IDENTITY_TABLE, PRODUCT, TEST_BALANCE_NO_ACMAP, ORDERS, ORDER_ITEM, BIG_ORDERS"/>
     </target>
 
     <!-- ************************** /reladomogenutil **********************************-->
@@ -1910,6 +1915,7 @@
             <exec-test-suite mithraxmlconfig="MithraMsSqlTestConfig.xml" testclass="com.gs.fw.common.mithra.test.MithraMsSqlTestSuite" heap="onheap"/>
             <exec-test-suite mithraxmlconfig="MithraSybaseTestConfig.xml" testclass="com.gs.fw.common.mithra.test.MithraSybaseTestSuite" heap="onheap"/>
             <exec-test-suite mithraxmlconfig="MithraMariaTestConfig.xml" testclass="com.gs.fw.common.mithra.test.MithraMariaTestSuite" heap="onheap"/>
+            <exec-test-suite mithraxmlconfig="MithraSnowflakeTestConfig.xml" testclass="com.gs.fw.common.mithra.test.MithraSnowflakeTestSuite" heap="onheap"/>
         </parallel>
     </target>
 
@@ -1924,6 +1930,7 @@
                 <include name="TEST-*MithraPostgresTestConfig.xml"/>
                 <include name="TEST-*MithraOracleTestConfig.xml"/>
                 <include name="TEST-*MithraMariaTestConfig.xml"/>
+                <include name="TEST-*MithraSnowflakeTestConfig.xml"/>
             </fileset>
             <report format="frames" todir="${root}/reladomo/target/junit-report-vendor-test"/>
         </junitreport>

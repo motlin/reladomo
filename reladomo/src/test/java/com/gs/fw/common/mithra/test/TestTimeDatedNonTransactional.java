@@ -53,6 +53,8 @@ public class TestTimeDatedNonTransactional extends MithraTestAbstract
     public void testToString()
     {
         AlarmDatedNonTransactionalList alarmList = new AlarmDatedNonTransactionalList(AlarmDatedNonTransactionalFinder.all());
+        alarmList.addOrderBy(AlarmDatedNonTransactionalFinder.id().ascendingOrderBy());
+
         assertEquals("10:30:59.011", alarmList.get(0).getTime().toString());
         assertEquals("03:11:23.000", alarmList.get(1).getTime().toString());
         assertEquals("14:59:10.043", alarmList.get(2).getTime().toString());
