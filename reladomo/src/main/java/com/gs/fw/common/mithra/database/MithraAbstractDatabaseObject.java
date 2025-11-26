@@ -660,6 +660,7 @@ public abstract class MithraAbstractDatabaseObject
     {
         Connection con = null;
         Statement stm = null;
+        DatabaseType dt = this.getDatabaseTypeGenericSource(genericSource);
         try
         {
             con = this.getConnectionForTempWriteGenericSource(genericSource, isForQuery);
@@ -673,7 +674,10 @@ public abstract class MithraAbstractDatabaseObject
             {
                 this.getSqlLogger().debug("connection:"+System.identityHashCode(con)+" creating temp table index with: " + indexSql);
             }
-            stm.executeUpdate(indexSql);
+            if (dt.shouldCreateTestIndexes()) 
+            {
+                stm.executeUpdate(indexSql);   
+            }
             if (this.getSqlLogger().isDebugEnabled())
             {
                 this.getSqlLogger().debug("creating temp index with: " + indexSql);
@@ -2668,13 +2672,16 @@ public abstract class MithraAbstractDatabaseObject
         dt.appendTestTableCreationPostamble(sb);
         executeSqlStatementGenericSource(sb.toString(), source);
 
-        if (this.getFinder().getAsOfAttributes() != null)
+        if (dt.shouldCreateTestIndexes()) 
         {
-            this.createUniqueIndexForTestTable(source);
-        }
-        else
-        {
-            this.createPrimaryKeyIndexForTestTable(source);
+            if (this.getFinder().getAsOfAttributes() != null)
+            {
+                this.createUniqueIndexForTestTable(source);
+            }
+            else
+            {
+                this.createPrimaryKeyIndexForTestTable(source);
+            }
         }
     }
 

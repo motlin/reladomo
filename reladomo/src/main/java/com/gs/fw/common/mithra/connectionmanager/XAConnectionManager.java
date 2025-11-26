@@ -162,6 +162,10 @@ public class XAConnectionManager extends AbstractConnectionManager
             {
                 this.databaseType = MariaDatabaseType.getInstance();
             }
+            else if (name.indexOf(".snowflake.") >= 0)
+            {
+                this.databaseType = SnowflakeDatabaseType.getInstance();
+            }
         }
     }
 
