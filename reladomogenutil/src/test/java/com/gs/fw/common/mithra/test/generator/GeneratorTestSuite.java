@@ -13,6 +13,7 @@
  specific language governing permissions and limitations
  under the License.
  */
+// Portions copyright Two Sigma. Licensed under Apache 2.0 license
 
 package com.gs.fw.common.mithra.test.generator;
 
@@ -41,6 +42,7 @@ public class GeneratorTestSuite
         suite.addTestSuite(TableInfoTest.class);
         suite.addTestSuite(DatabaseIndexValidatorTest.class);
         suite.addTestSuite(DatabaseTableValidatorTest.class);
+        suite.addTestSuite(CoreMithraDbDefinitionGeneratorTest.class);
         return suite;
     }
 }
