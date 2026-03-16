@@ -271,6 +271,9 @@
         <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.StringDatedOrder" cacheType="partial"/>
         <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.ParaProduct" cacheType="partial"/>
 
+        <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.WalkIntoParent" cacheType="partial"/>
+        <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.WalkIntoChild" cacheType="partial"/>
+
         <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.AltProduct" cacheType="partial"/>
         <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.AltSynonym" cacheType="partial"/>
         <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.AltSynonymType" cacheType="partial"/>

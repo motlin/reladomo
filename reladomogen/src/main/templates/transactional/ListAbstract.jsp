@@ -216,10 +216,18 @@ public class <%= className %> extends DelegatingList<<%= wrapper.getClassName() 
         <% for (int i = 0; i < relationshipAttributes.length; i++) { %>
             <% if (relationshipAttributes[i].hasSetter() && relationshipAttributes[i].isRelatedDependent()
                 && relationshipAttributes[i].getRelatedObject().isTransactional()
-                && !relationshipAttributes[i].getRelatedObject().hasAsOfAttributes()) { %>
+                && !relationshipAttributes[i].getRelatedObject().hasAsOfAttributes()
+                && !relationshipAttributes[i].isWalkIntoDependent()) { %>
                 ((DelegatingList)this.<%= relationshipAttributes[i].getGetterNameForList() %>()).cascadeDeleteAll();
             <% } %>
         <% } %>
+    }
+    <% } %>
+    <% if (wrapper.hasWalkIntoDependentRelationships()) { %>
+    public void cascadeDeleteAll()
+    {
+        com.gs.fw.common.mithra.MithraManagerProvider.getMithraManager().executeTransactionalCommand(
+            new com.gs.fw.common.mithra.list.CascadeDeleteAllOneByOneCommand(this));
     }
     <% } %>
     <% if (wrapper.hasAsOfAttributes()) { %>

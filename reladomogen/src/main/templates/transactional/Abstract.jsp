@@ -1277,7 +1277,8 @@ public abstract class <%=wrapper.getAbstractClassName()%> extends com.gs.fw.comm
       <% if (wrapper.hasDependentRelationships()) { %>
         <% for (int i=0;i<relationshipAttributes.length;i++)
             if (relationshipAttributes[i].hasSetter() && relationshipAttributes[i].isRelatedDependent()
-            && relationshipAttributes[i].getRelatedObject().isTransactional()) { %>
+            && relationshipAttributes[i].getRelatedObject().isTransactional()
+            && !relationshipAttributes[i].isWalkIntoDependent()) { %>
             <% if (relationshipAttributes[i].isToMany()) { %>
                 <%if(relationshipAttributes[i].getRelatedObject().isGenerateInterfaces()){%>((<%=relationshipAttributes[ i ].getMithraImplTypeAsString()%>)<%}%>
                 this.<%=relationshipAttributes[i].getGetter()%>()<%if(relationshipAttributes[i].getRelatedObject().isGenerateInterfaces()){%>)<%}%>.<%= relationshipAttributes[i].getRelatedObject().getCascadeDeleteOrTerminate()%>All();
@@ -1290,11 +1291,26 @@ public abstract class <%=wrapper.getAbstractClassName()%> extends com.gs.fw.comm
             <% } %>
         <% } %>
       <% } %>
+      <% if (wrapper.hasWalkIntoDependentRelationships()) { %>
+        <% for (int i=0;i<relationshipAttributes.length;i++)
+            if (relationshipAttributes[i].hasSetter() && relationshipAttributes[i].isWalkIntoDependent()
+            && relationshipAttributes[i].getRelatedObject().isTransactional()) { %>
+                <%= relationshipAttributes[i].getImplTypeAsString()%> walkInto_<%=relationshipAttributes[i].getName()%> = <%if(relationshipAttributes[i].getRelatedObject().isGenerateInterfaces()){%>(<%=relationshipAttributes[i].getMithraImplTypeAsString()%>) <%}%>this.<%=relationshipAttributes[i].getGetter()%>();
+        <% } %>
+      <% } %>
     <% if (wrapper.isTablePerClassSubClass()) { %>
         super.cascadeDeleteImpl();
     <% } else { %>
         this.delete();
     <% } %>
+      <% if (wrapper.hasWalkIntoDependentRelationships()) { %>
+        <% for (int i=0;i<relationshipAttributes.length;i++)
+            if (relationshipAttributes[i].hasSetter() && relationshipAttributes[i].isWalkIntoDependent()
+            && relationshipAttributes[i].getRelatedObject().isTransactional()) { %>
+                if (walkInto_<%=relationshipAttributes[i].getName()%> != null)
+                    walkInto_<%=relationshipAttributes[i].getName()%>.<%= relationshipAttributes[i].getRelatedObject().getCascadeDeleteOrTerminate()%>();
+        <% } %>
+      <% } %>
     }
 
     public Cache zGetCache()

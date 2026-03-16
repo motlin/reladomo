@@ -32,7 +32,7 @@ extends MithraTestAbstract
     protected Class[] getRestrictedClassList()
     {
         return new Class[] { Order.class, OrderParentToChildren.class, OrderItem.class, OrderStatus.class, OrderItemStatus.class, Book.class, Manufacturer.class, Product.class,
-            OrderItemWi.class, OrderStatusWi.class};
+            OrderItemWi.class, OrderStatusWi.class, WalkIntoParent.class, WalkIntoChild.class};
     }
 
     protected void setUp() throws Exception
@@ -1082,5 +1082,78 @@ extends MithraTestAbstract
             }
         });
         this.dropOrderItemProductForeignKey();
+    }
+
+    public void testWalkIntoDependentCascadeDelete()
+    {
+        MithraManagerProvider.getMithraManager().executeTransactionalCommand(new TransactionalCommand()
+        {
+            public Object executeTransaction(MithraTransaction tx) throws Throwable
+            {
+                WalkIntoParent parent = WalkIntoParentFinder.findOne(WalkIntoParentFinder.parentId().eq(1));
+                assertNotNull(parent);
+                WalkIntoChild child = WalkIntoChildFinder.findOne(WalkIntoChildFinder.childId().eq(100));
+                assertNotNull(child);
+
+                parent.cascadeDelete();
+
+                return null;
+            }
+        });
+
+        WalkIntoParent parent = WalkIntoParentFinder.findOne(WalkIntoParentFinder.parentId().eq(1));
+        assertNull(parent);
+        WalkIntoChild child = WalkIntoChildFinder.findOne(WalkIntoChildFinder.childId().eq(100));
+        assertNull(child);
+    }
+
+    public void testWalkIntoDependentCascadeDeleteMultiple()
+    {
+        MithraManagerProvider.getMithraManager().executeTransactionalCommand(new TransactionalCommand()
+        {
+            public Object executeTransaction(MithraTransaction tx) throws Throwable
+            {
+                WalkIntoParentList parents = WalkIntoParentFinder.findMany(WalkIntoParentFinder.parentId().greaterThan(0));
+                assertEquals(3, parents.size());
+
+                parents.cascadeDeleteAll();
+
+                return null;
+            }
+        });
+
+        WalkIntoParentList parents = WalkIntoParentFinder.findMany(WalkIntoParentFinder.parentId().greaterThan(0));
+        assertEquals(0, parents.size());
+
+        WalkIntoChildList children = WalkIntoChildFinder.findMany(WalkIntoChildFinder.childId().greaterThan(0));
+        assertEquals(0, children.size());
+    }
+
+    public void testWalkIntoDependentSingleDelete()
+    {
+        MithraManagerProvider.getMithraManager().executeTransactionalCommand(new TransactionalCommand()
+        {
+            public Object executeTransaction(MithraTransaction tx) throws Throwable
+            {
+                WalkIntoParent parent = WalkIntoParentFinder.findOne(WalkIntoParentFinder.parentId().eq(2));
+                assertNotNull(parent);
+                WalkIntoChild child = WalkIntoChildFinder.findOne(WalkIntoChildFinder.childId().eq(200));
+                assertNotNull(child);
+
+                parent.cascadeDelete();
+
+                return null;
+            }
+        });
+
+        WalkIntoParent parent = WalkIntoParentFinder.findOne(WalkIntoParentFinder.parentId().eq(2));
+        assertNull(parent);
+        WalkIntoChild child = WalkIntoChildFinder.findOne(WalkIntoChildFinder.childId().eq(200));
+        assertNull(child);
+
+        WalkIntoParent parent3 = WalkIntoParentFinder.findOne(WalkIntoParentFinder.parentId().eq(3));
+        assertNotNull(parent3);
+        WalkIntoChild child3 = WalkIntoChildFinder.findOne(WalkIntoChildFinder.childId().eq(300));
+        assertNotNull(child3);
     }
 }

@@ -3597,6 +3597,17 @@ public class MithraObjectTypeWrapper extends MithraBaseObjectTypeWrapper
         return false;
     }
 
+    public boolean hasWalkIntoDependentRelationships()
+    {
+        RelationshipAttribute[] relationships = this.getRelationshipAttributes();
+        for (int i = 0; i < relationships.length; i++)
+        {
+            if (relationships[i].hasSetter() && relationships[i].isWalkIntoDependent()
+                && relationships[i].getRelatedObject().isTransactional()) return true;
+        }
+        return false;
+    }
+
     public boolean hasSingleAttributePrimaryKey()
     {
         return this.primaryKeyAttributes.size() == 1;

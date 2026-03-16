@@ -303,6 +303,9 @@
     <MithraObjectResource name="NvmDevNetworkDevice"/>
     <MithraObjectResource name="NvmDevVirtualLan"/>
 
+    <MithraObjectResource name="WalkIntoParent"/>
+    <MithraObjectResource name="WalkIntoChild"/>
+
     <!-- Interfaces -->
 
     <MithraObjectResource name="OrderWi" generateInterfaces="true"/>

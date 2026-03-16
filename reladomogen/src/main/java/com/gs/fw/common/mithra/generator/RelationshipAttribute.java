@@ -1029,33 +1029,55 @@ public class RelationshipAttribute implements CommonAttribute
 
     public boolean canRelatedBeDependent()
     {
-        boolean canBeDependent = false;
-        if (!this.getCardinality().isManyToMany() && this.dependsOnlyOnFromToObjects())
+        if (this.isStandardDependent() || this.isWalkIntoDependent())
         {
-            canBeDependent = true;
-            Attribute[] leftAttributes = this.getMapperVisitor().getLeftJoinAttributes();
-            Attribute[] pkAttributes = this.getFromObject().getPrimaryKeyAttributes();
-            for(int i=0;canBeDependent && i<pkAttributes.length;i++)
+            return true;
+        }
+        System.out.println("WARNING: relationship "+this.getName()+" between "+this.getFromObject().getClassName()+" and "+
+            this.getRelatedObject().getClassName()+" is marked as 'relatedIsDependent' but there is no primary key relationship between the two objects."+
+            " Relationship persistence will be disabled for this relationship");
+        this.isRelatedDependent = false;
+        return false;
+    }
+
+    private boolean isStandardDependent()
+    {
+        if (this.getCardinality().isManyToMany() || !this.dependsOnlyOnFromToObjects())
+        {
+            return false;
+        }
+        Attribute[] leftAttributes = this.getMapperVisitor().getLeftJoinAttributes();
+        Attribute[] pkAttributes = this.getFromObject().getPrimaryKeyAttributes();
+        for (int i = 0; i < pkAttributes.length; i++)
+        {
+            boolean found = false;
+            for (int j = 0; !found && j < leftAttributes.length; j++)
             {
-                boolean found = false;
-                for(int j=0;!found && j<leftAttributes.length;j++)
-                {
-                    found = leftAttributes[j].getName().equals(pkAttributes[i].getName());
-                }
-                if (!found)
-                {
-                    canBeDependent = false;
-                }
+                found = leftAttributes[j].getName().equals(pkAttributes[i].getName());
+            }
+            if (!found)
+            {
+                return false;
             }
         }
-        if (!canBeDependent)
+        return true;
+    }
+
+    public boolean isWalkIntoDependent()
+    {
+        if (!this.isRelatedDependent)
         {
-            System.out.println("WARNING: relationship "+this.getName()+" between "+this.getFromObject().getClassName()+" and "+
-                this.getRelatedObject().getClassName()+" is marked as 'relatedIsDependent' but there is no primary key relationship between the two objects."+
-                " Relationship persistence will be disabled for this relationship");
-            this.isRelatedDependent = false;
+            return false;
         }
-        return canBeDependent;
+        if (this.getCardinality().isManyToMany() || !this.dependsOnlyOnFromToObjects())
+        {
+            return false;
+        }
+        if (this.isStandardDependent())
+        {
+            return false;
+        }
+        return this.getMapperVisitor().isByPrimaryKey();
     }
 
     public boolean hasParentContainer()

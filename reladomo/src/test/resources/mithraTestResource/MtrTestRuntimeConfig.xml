@@ -19,6 +19,8 @@
     <ConnectionManager className="com.gs.fw.common.mithra.test.ConnectionManagerForTests">
         <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.Order" cacheType="partial"/>
         <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.OrderItem" cacheType="partial"/>
+        <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.WalkIntoParent" cacheType="partial"/>
+        <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.WalkIntoChild" cacheType="partial"/>
     </ConnectionManager>
     <ConnectionManager className="com.gs.fw.common.mithra.test.mithraTestResource.ConnectionManagerForBaseConfigTests">
         <MithraObjectConfiguration className="com.gs.fw.common.mithra.test.domain.Seller" cacheType="partial"/>
