@@ -251,12 +251,16 @@
     </target>
 
     <target name="generate-mithra-query-parser" depends="init-reladomo">
-        <mkdir dir="${root}/reladomo/target/grammar/com/gs/fw/common/mithra/generator/queryparser"/>
         <property name="mithra.queryparser.dir" location="${root}/reladomo/target/grammar/com/gs/fw/common/mithra/generator/queryparser"/>
+        <property name="mithra.queryparser.src" location="${root}/reladomogen/src/main/java/com/gs/fw/common/mithra/generator/queryparser"/>
+        <property name="javacc.home" location="${root}/build/target/javacc-3.2"/>
+        <mkdir dir="${mithra.queryparser.dir}"/>
+        <mkdir dir="${javacc.home}/bin/lib"/>
+        <copy file="${root}/build/lib/javacc-3.2.jar" tofile="${javacc.home}/bin/lib/javacc.jar"/>
         <jjtree
             target="${root}/reladomo/src/main/grammar/mithra.jjt"
             outputdirectory="${mithra.queryparser.dir}"
-            javacchome="${mithra.home}/build/javacc-3.2"
+            javacchome="${javacc.home}"
             static="false"
             visitor="true"
             multi="true"
@@ -264,12 +268,19 @@
         <javacc
             target="${mithra.queryparser.dir}/mithra.jj"
             outputdirectory="${mithra.queryparser.dir}"
-            javacchome="${mithra.home}/build/javacc-3.2"
+            javacchome="${javacc.home}"
             static="false"
             />
         <delete quiet="true">
             <fileset dir="${mithra.queryparser.dir}" includes="*.jj"/>
         </delete>
+        <copy todir="${mithra.queryparser.src}" overwrite="true">
+            <fileset dir="${mithra.queryparser.dir}">
+                <include name="MithraQL.java"/>
+                <include name="MithraQLConstants.java"/>
+                <include name="MithraQLTokenManager.java"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="mithra-vendor-test-suite" depends="reladomo-vendor-junitreport, generate-reladomo-xml-test" description="Run JUnit Vendor test cases">
@@ -744,6 +755,10 @@
         <taskdef name="reladomo-gen" classname="com.gs.fw.common.mithra.generator.MithraGenerator" loaderRef="mithraGenerator">
             <classpath refid="reladomogen.classpath"/>
         </taskdef>
+        <delete quiet="true" dir="${root}/reladomo/target/test-generated-onheap-src"/>
+        <delete quiet="true" dir="${root}/reladomo/target/test-generated-offheap-src"/>
+        <mkdir dir="${root}/reladomo/target/test-generated-onheap-src"/>
+        <mkdir dir="${root}/reladomo/target/test-generated-offheap-src"/>
         <reladomo-gen xml="${root}/reladomo/src/test/reladomo-xml/MithraClassListToImport.xml"
             generatedDir="${root}/reladomo/target/test-generated-onheap-src"
             nonGeneratedDir="${root}/reladomo/src/test/java"
