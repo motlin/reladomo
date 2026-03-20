@@ -46,7 +46,6 @@ import com.gs.fw.common.mithra.util.fileparser.MithraParsedData;
 import junit.framework.TestCase;
 import org.eclipse.collections.impl.list.mutable.FastList;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -161,8 +160,7 @@ public abstract class AbstractOverlapFixerTest extends TestCase
 
         //printActual(fixed);
 
-        String slash = File.separator;
-        MithraTestDataParser parser = new MithraTestDataParser("reladomo" + slash + "src" + slash + "test" + slash+ "resources" + slash+ "testdata" + slash + "overlapTestDataFixedWithOperation.txt");
+        MithraTestDataParser parser = new MithraTestDataParser("testdata/overlapTestDataFixedWithOperation.txt");
         List<MithraParsedData> results = parser.getResults();
         List<MithraDataObject> dataObjects = null;
         for (MithraParsedData parsedData : results)
@@ -186,8 +184,7 @@ public abstract class AbstractOverlapFixerTest extends TestCase
 
         //printActual(fixed);
 
-        String slash = File.separator;
-        MithraTestDataParser parser = new MithraTestDataParser("reladomo" + slash + "src" + slash + "test" + slash+ "resources" + slash+ "testdata" + slash + "overlapTestDataFixed.txt");
+        MithraTestDataParser parser = new MithraTestDataParser("testdata/overlapTestDataFixed.txt");
         List<MithraParsedData> results = parser.getResults();
         List<MithraDataObject> dataObjects = null;
         for (MithraParsedData parsedData : results)

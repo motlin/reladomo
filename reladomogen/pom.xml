@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.goldmansachs.reladomo</groupId>
+        <artifactId>reladomo-parent</artifactId>
+        <version>18.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>reladomogen</artifactId>
+
+    <name>Reladomo Generator</name>
+    <description>Reladomo generator is responsible for generating abstract classes used by Reladomo objects.</description>
+
+    <properties>
+        <reladomo.version.string>${project.version}</reladomo.version.string>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.goldmansachs.reladomo</groupId>
+            <artifactId>reladomo-template-minifier</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Step 1: Generate xsd2bean classes from mithraobject.xsd -->
+            <plugin>
+                <groupId>com.goldmansachs.reladomo</groupId>
+                <artifactId>reladomo-xsd2bean-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>xsd2bean-generator</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <parserName>MithraGenerator</parserName>
+                            <destinationPackage>com.gs.fw.common.mithra.generator.metamodel</destinationPackage>
+                            <xsd>${project.basedir}/src/main/xsd/mithraobject.xsd</xsd>
+                            <generatedDir>${project.build.directory}/generated-sources/xsd2bean</generatedDir>
+                            <nonGeneratedDir>${project.basedir}/src/main/java</nonGeneratedDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <!-- Step 2: Generate MithraVersion.java from template -->
+                    <execution>
+                        <id>generate-mithra-version</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/generator"/>
+                                <copy file="${project.basedir}/src/main/templates/MithraVersion.tmpl"
+                                      toFile="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/generator/MithraVersion.java"/>
+                                <replace casesensitive="true"
+                                         dir="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/generator"
+                                         includes="MithraVersion.java">
+                                    <replacefilter token="%PACKAGE_NAME%"
+                                                   value="com.gs.fw.common.mithra.generator"/>
+                                </replace>
+                                <replace casesensitive="true"
+                                         dir="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/generator"
+                                         includes="MithraVersion.java">
+                                    <replacefilter token="%MITHRA_VERSION_STRING%"
+                                                   value="${reladomo.version.string}"/>
+                                </replace>
+                                <replace casesensitive="true"
+                                         dir="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/generator"
+                                         includes="MithraVersion.java">
+                                    <replacefilter token="%MITHRA_VERSION%"
+                                                   value="${parsedVersion.majorVersion} &lt;&lt; 16 | ${parsedVersion.minorVersion} &lt;&lt; 8 | ${parsedVersion.incrementalVersion}"/>
+                                </replace>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <!-- Step 3: Compile JSP templates to Java using Jasper -->
+                    <execution>
+                        <id>generate-jsp-templates</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/generated-sources/templates/com/gs/fw/common/mithra/templates"/>
+                                <taskdef name="jasper2" classname="org.apache.jasper.JspC">
+                                    <classpath>
+                                        <pathelement location="${settings.localRepository}/org/apache/tomcat/jasper/6.0.16/jasper-6.0.16.jar"/>
+                                        <pathelement location="${settings.localRepository}/org/apache/tomcat/jasper-el/6.0.16/jasper-el-6.0.16.jar"/>
+                                        <pathelement location="${settings.localRepository}/javax/servlet/jsp/jsp-api/2.1/jsp-api-2.1.jar"/>
+                                        <pathelement location="${settings.localRepository}/javax/servlet/javax.servlet-api/${servlet-api.version}/javax.servlet-api-${servlet-api.version}.jar"/>
+                                        <pathelement location="${settings.localRepository}/org/apache/ant/ant/${ant.version}/ant-${ant.version}.jar"/>
+                                    </classpath>
+                                </taskdef>
+                                <jasper2 outputDir="${project.build.directory}/generated-sources/templates"
+                                         uriRoot="${project.basedir}/src/main/templates"
+                                         package="com.gs.fw.common.mithra.templates"
+                                         listErrors="true"
+                                         verbose="0"
+                                         compile="false"/>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <!--
+                        Remove the SourceFormatter.java that xsd2bean (Freya) regenerates into
+                        src/main/java as a non-generated helper. It now lives in the
+                        reladomo-template-minifier module, which reladomogen depends on, so the
+                        regenerated copy is a redundant duplicate that would otherwise pollute the
+                        source tree. Runs in process-sources, after xsd2bean's generate-sources.
+                    -->
+                    <execution>
+                        <id>remove-generated-source-formatter</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete quiet="true"
+                                        file="${project.basedir}/src/main/java/com/gs/fw/common/mithra/generator/SourceFormatter.java"/>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <!--
+                        Step 4: Run TemplateMinifier on generated template sources.
+                        This strips out servlet/JSP imports so the templates can compile against
+                        reladomogen's own stub classes (HttpServletRequest, PageContext, etc.)
+                        TemplateMinifier comes from the reladomo-template-minifier module.
+                    -->
+                    <execution>
+                        <id>minify-template-sources</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <java classname="com.gs.fw.common.mithra.generator.TemplateMinifier"
+                                      fork="true"
+                                      failonerror="true"
+                                      maxmemory="128m">
+                                    <arg value="${project.build.directory}/generated-sources/templates/com/gs/fw/common/mithra/templates"/>
+                                    <classpath>
+                                        <pathelement location="${settings.localRepository}/com/goldmansachs/reladomo/reladomo-template-minifier/${project.version}/reladomo-template-minifier-${project.version}.jar"/>
+                                    </classpath>
+                                </java>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <!-- Step 7: Post-compile: extract templates from reladomo source files -->
+                    <execution>
+                        <id>template-from-java</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <taskdef name="templateFromJava"
+                                         classname="com.gs.fw.common.mithra.generator.TemplateFromJavaTask">
+                                    <classpath>
+                                        <pathelement path="${project.build.outputDirectory}"/>
+                                        <pathelement location="${settings.localRepository}/org/apache/ant/ant/${ant.version}/ant-${ant.version}.jar"/>
+                                    </classpath>
+                                </taskdef>
+                                <templateFromJava
+                                    input="${project.basedir}/../reladomo/src/main/java/com/gs/fw/common/mithra/superclassimpl/MithraTransactionalObjectImpl.java"
+                                    output="${project.build.outputDirectory}/com/gs/fw/common/mithra/generator/Transactional.tmpl"/>
+                                <templateFromJava
+                                    input="${project.basedir}/../reladomo/src/main/java/com/gs/fw/common/mithra/superclassimpl/MithraDatedTransactionalObjectImpl.java"
+                                    output="${project.build.outputDirectory}/com/gs/fw/common/mithra/generator/DatedTransactional.tmpl"/>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <!-- Step 8: Post-compile: generate md5 checksum of generator classes -->
+                    <execution>
+                        <id>generate-md5</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete quiet="true"
+                                        file="${project.build.outputDirectory}/com/gs/fw/common/mithra/generator/mithragen.md5"/>
+                                <concat binary="true"
+                                        destfile="${project.build.directory}/mithragentemp.concat">
+                                    <fileset dir="${project.build.outputDirectory}">
+                                        <include name="com/gs/fw/common/mithra/generator/**/*.class"/>
+                                        <include name="com/gs/fw/common/mithra/generator/**/*.tmpl*"/>
+                                        <include name="com/gs/fw/common/mithra/templates/**/*.class"/>
+                                    </fileset>
+                                </concat>
+                                <checksum file="${project.build.directory}/mithragentemp.concat"
+                                          property="mithragen.md5.property"/>
+                                <delete quiet="true"
+                                        file="${project.build.directory}/mithragentemp.concat"/>
+                                <echo message="${mithragen.md5.property}"
+                                      file="${project.build.outputDirectory}/com/gs/fw/common/mithra/generator/mithragen.md5"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>jasper</artifactId>
+                        <version>6.0.16</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>jasper-el</artifactId>
+                        <version>6.0.16</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.servlet.jsp</groupId>
+                        <artifactId>jsp-api</artifactId>
+                        <version>2.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>javax.servlet-api</artifactId>
+                        <version>${servlet-api.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- Step 5: Add generated source directories -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>parse-version</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>add-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/xsd2bean</source>
+                                <source>${project.build.directory}/generated-sources/version</source>
+                                <source>${project.build.directory}/generated-sources/templates</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Step 6: Compile -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:-unchecked</arg>
+                        <arg>-Xlint:-deprecation</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

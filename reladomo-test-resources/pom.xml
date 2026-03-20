@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.goldmansachs.reladomo</groupId>
+        <artifactId>reladomo-parent</artifactId>
+        <version>18.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>reladomo-test-resources</artifactId>
+
+    <name>Reladomo Test Resources</name>
+    <description>
+        Hand-written test domain classes (as .java resource files), Reladomo XML definitions,
+        and test configuration files. Not compiled here — consumed by variant test modules
+        that generate abstract classes and compile against them.
+    </description>
+
+    <build>
+        <!-- No compilation — this module only packages resources -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <skipMain>true</skipMain>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <resources>
+            <!-- Hand-written test Java source files (packaged as resources, not compiled) -->
+            <resource>
+                <directory>${project.basedir}/../reladomo/src/test/java</directory>
+                <targetPath>test-java</targetPath>
+            </resource>
+            <!-- Reladomo XML object definitions for code generation -->
+            <resource>
+                <directory>${project.basedir}/../reladomo/src/test/reladomo-xml</directory>
+                <targetPath>test-reladomo-xml</targetPath>
+            </resource>
+            <!-- Test runtime configuration files (log4j configs, Mithra XML configs, test data) -->
+            <resource>
+                <directory>${project.basedir}/../reladomo/src/test/resources</directory>
+                <targetPath>test-resources</targetPath>
+            </resource>
+        </resources>
+    </build>
+</project>

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.goldmansachs.reladomo</groupId>
+        <artifactId>reladomo-parent</artifactId>
+        <version>18.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>reladomo</artifactId>
+
+    <name>Reladomo</name>
+    <description>Reladomo is an object-relational mapping framework.</description>
+
+    <properties>
+        <reladomo.version.string>${project.version}</reladomo.version.string>
+        <!-- Tests are compiled and run in reladomo-test-onheap and reladomo-test-offheap modules -->
+        <maven.test.skip>true</maven.test.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.collections</groupId>
+            <artifactId>eclipse-collections-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.collections</groupId>
+            <artifactId>eclipse-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <!-- ASM is relocated to com.gs.mithra.asm via jarjar at compile time.
+             This dependency is needed so Maven downloads the jar for jarjar to consume. -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Step 1: Generate xsd2bean classes from runtime and cacheloader XSDs -->
+            <plugin>
+                <groupId>com.goldmansachs.reladomo</groupId>
+                <artifactId>reladomo-xsd2bean-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>xsd2bean-runtime</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <parserName>MithraRuntime</parserName>
+                            <destinationPackage>com.gs.fw.common.mithra.mithraruntime</destinationPackage>
+                            <xsd>${project.basedir}/src/main/xsd/mithraruntime.xsd</xsd>
+                            <generatedDir>${project.build.directory}/generated-sources/xsd2bean</generatedDir>
+                            <nonGeneratedDir>${project.basedir}/src/main/java</nonGeneratedDir>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>xsd2bean-cacheloader</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <parserName>MithraCacheLoader</parserName>
+                            <destinationPackage>com.gs.fw.common.mithra.cacheloader.xmlbinding</destinationPackage>
+                            <xsd>${project.basedir}/src/main/xsd/mithracacheloader.xsd</xsd>
+                            <generatedDir>${project.build.directory}/generated-sources/xsd2bean</generatedDir>
+                            <nonGeneratedDir>${project.basedir}/src/main/java</nonGeneratedDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Step 2: Generate MithraVersion.java for runtime -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-mithra-version</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/util"/>
+                                <copy file="${project.basedir}/../reladomogen/src/main/templates/MithraVersion.tmpl"
+                                      toFile="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/util/MithraVersion.java"/>
+                                <replace casesensitive="true"
+                                         dir="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/util"
+                                         includes="MithraVersion.java">
+                                    <replacefilter token="%PACKAGE_NAME%"
+                                                   value="com.gs.fw.common.mithra.util"/>
+                                </replace>
+                                <replace casesensitive="true"
+                                         dir="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/util"
+                                         includes="MithraVersion.java">
+                                    <replacefilter token="%MITHRA_VERSION_STRING%"
+                                                   value="${reladomo.version.string}"/>
+                                </replace>
+                                <replace casesensitive="true"
+                                         dir="${project.build.directory}/generated-sources/version/com/gs/fw/common/mithra/util"
+                                         includes="MithraVersion.java">
+                                    <replacefilter token="%MITHRA_VERSION%"
+                                                   value="${parsedVersion.majorVersion} &lt;&lt; 16 | ${parsedVersion.minorVersion} &lt;&lt; 8 | ${parsedVersion.incrementalVersion}"/>
+                                </replace>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <!-- Step 2b: Create relocated ASM jar (org.objectweb.asm -> com.gs.mithra.asm) -->
+                    <execution>
+                        <id>jarjar-asm</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask">
+                                    <classpath>
+                                        <pathelement location="${project.basedir}/../build/lib/jarjar-1.3.jar"/>
+                                    </classpath>
+                                </taskdef>
+                                <mkdir dir="${project.build.directory}/tmp/asm"/>
+                                <jarjar jarfile="${project.build.directory}/reladomo-asm-${asm.version}.jar">
+                                    <fileset dir="${project.build.directory}/tmp/asm"/>
+                                    <zipfileset src="${settings.localRepository}/org/ow2/asm/asm/${asm.version}/asm-${asm.version}.jar"/>
+                                    <rule pattern="org.objectweb.asm.**" result="com.gs.mithra.asm.@1"/>
+                                </jarjar>
+                                <!-- Unpack relocated classes into target/classes so they're on the compile classpath -->
+                                <unzip src="${project.build.directory}/reladomo-asm-${asm.version}.jar"
+                                       dest="${project.build.outputDirectory}">
+                                    <patternset>
+                                        <exclude name="META-INF/**"/>
+                                    </patternset>
+                                </unzip>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Step 3: Generate Reladomo classes for replication and txid -->
+            <plugin>
+                <groupId>com.goldmansachs.reladomo</groupId>
+                <artifactId>reladomo-gen-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-replication-classes</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <xml>${project.basedir}/src/main/reladomo-xml/replication/MithraReplicationNotificationClassList.xml</xml>
+                            <generatedDir>${project.build.directory}/generated-sources/reladomo</generatedDir>
+                            <nonGeneratedDir>${project.basedir}/src/main/java</nonGeneratedDir>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-txid-classes</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <xml>${project.basedir}/src/main/reladomo-xml/txid/ReladomoTxidClassList.xml</xml>
+                            <generatedDir>${project.build.directory}/generated-sources/reladomo</generatedDir>
+                            <nonGeneratedDir>${project.basedir}/src/main/java</nonGeneratedDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Step 4: Add all generated source directories -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>parse-version</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>add-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/xsd2bean</source>
+                                <source>${project.build.directory}/generated-sources/version</source>
+                                <source>${project.build.directory}/generated-sources/reladomo</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:-unchecked</arg>
+                        <arg>-Xlint:-deprecation</arg>
+                        <arg>-XDignore.symbol.file</arg>
+                    </compilerArgs>
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
+
+            <!-- Note: relocated ASM classes are already in target/classes from jarjar-asm step -->
+        </plugins>
+    </build>
+</project>

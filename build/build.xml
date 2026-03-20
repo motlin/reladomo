@@ -362,6 +362,8 @@
             nonGeneratedDir="${root}/reladomogen/src/main/java"
             >
         </xsd2bean-gen>
+        <delete quiet="true"
+                file="${root}/reladomogen/src/main/java/com/gs/fw/common/mithra/generator/SourceFormatter.java"/>
     </target>
     <target name="gen-reladomogen-version-class" depends="init-reladomo">
 
@@ -417,6 +419,7 @@
     <target name="check-template-generation" depends="init-reladomo">
         <uptodate property="template-generation.notRequired" targetfile="${root}/reladomogen/target/generated-src/com/gs/fw/common/mithra/templates/readonly/Abstract_jsp.java" >
           <srcfiles dir= "${root}/reladomogen/src/main/templates" includes="**/*"/>
+          <srcfiles dir="${root}/reladomo-template-minifier/src/main/java" includes="**/*.java"/>
         </uptodate>
     </target>
 
@@ -438,7 +441,7 @@
             source="1.8"
             target="1.8"
             includeAntRuntime="true">
-            <src path="${root}/reladomogen/src/main/java"/>
+            <src path="${root}/reladomo-template-minifier/src/main/java"/>
             <include name="com/gs/fw/common/mithra/generator/TemplateMinifier.java"/>
             <include name="com/gs/fw/common/mithra/generator/SourceFormatter.java"/>
         </javac>
@@ -458,6 +461,7 @@
     <target name="compile-reladomo-generator" depends="init-reladomo, gen-reladomogen-version-class, xsd2bean-reladomo-generator, generate-templates">
         <dependset>
             <srcfileset dir="${root}/reladomogen/src/main/java"/>
+            <srcfileset dir="${root}/reladomo-template-minifier/src/main/java"/>
             <srcfileset dir="${root}/reladomogen/target/generated-src"/>
             <targetfileset dir="${root}/reladomogen/target/classes"/>
         </dependset>
@@ -476,6 +480,7 @@
             nowarn="true"
             includeAntRuntime="true">
             <src path="${root}/reladomogen/src/main/java"/>
+            <src path="${root}/reladomo-template-minifier/src/main/java"/>
             <src path="${root}/reladomogen/target/generated-src"/>
             <classpath>
                 <path refid="reladomogen.compile.classpath"/>

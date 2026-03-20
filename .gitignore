@@ -12,9 +12,21 @@ reladomogsi/target/**
 reladomoui/target/**
 reladomoserial/target/**
 reladomographql/target/**
+reladomoxa/target/**
+reladomo-xsd2bean-maven-plugin/target/**
+reladomo-gen-maven-plugin/target/**
+reladomo-test-util/target/**
+reladomo-template-minifier/target/**
+reladomo-test-resources/target/**
+reladomo-test-onheap/target/**
+reladomo-test-offheap/target/**
 .idea/**
 *.iml
 target/**
 samples/**/target/**
 samples/**/build/**
 .gradle
+
+# xsd2bean (Freya) regenerates this helper into src/main/java on every build;
+# it now lives in the reladomo-template-minifier module and is deleted during the build.
+reladomogen/src/main/java/com/gs/fw/common/mithra/generator/SourceFormatter.java
