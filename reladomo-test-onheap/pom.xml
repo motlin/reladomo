@@ -267,16 +267,226 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
-                    <argLine>-Xmx3048m -ea -Duser.timezone=America/New_York</argLine>
+                    <argLine>-server -Xmx3048m -ea -Duser.timezone=America/New_York</argLine>
+                    <reuseForks>false</reuseForks>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
+                    <useSystemClassLoader>true</useSystemClassLoader>
+                    <workingDirectory>${project.basedir}/..</workingDirectory>
                     <systemPropertyVariables>
                         <mithra.xml.root>${project.build.outputDirectory}/</mithra.xml.root>
-                        <mithra.xml.config>MithraConfigFullCache.xml</mithra.xml.config>
+                        <log4j.configuration>file:${project.build.outputDirectory}/log4jWarn.config</log4j.configuration>
                     </systemPropertyVariables>
-                    <includes>
-                        <include>**/MithraTestSuite.java</include>
-                    </includes>
                 </configuration>
+                <executions>
+                    <!-- Suite 2: Full cache, MithraTestSuite (default) -->
+                    <execution>
+                        <id>default-test</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite2}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigFullCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <!-- Suite 1: Partial cache, MithraTestSuite -->
+                    <execution>
+                        <id>suite1</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite1}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigPartialCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <!-- Suite 3: Partial cache, MithraMultiVmTestSuite -->
+                    <execution>
+                        <id>suite3</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite3}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigPartialCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraMultiVmTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <!-- Suite 4: Full cache, MithraMultiVmTestSuite -->
+                    <execution>
+                        <id>suite4</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite4}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigFullCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraMultiVmTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <!-- Suite 7: Util tests -->
+                    <execution>
+                        <id>suite7</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite7}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>Util.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraUtilTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <!-- Suite 9 onheap parts -->
+                    <execution>
+                        <id>suite9-cacheloader</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite9}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraCacheTestConfig.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/CacheLoaderSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>suite9-tostring</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite9}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigPartialCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraToStringTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>suite9-tablemanager</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite9}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraTestTableManagerConfig.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/TestTablePartitionManager.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Default: only suite2 (FullCache/MithraTestSuite) runs -->
+        <profile>
+            <id>default-suites</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <skip.suite1>true</skip.suite1>
+                <skip.suite2>false</skip.suite2>
+                <skip.suite3>true</skip.suite3>
+                <skip.suite4>true</skip.suite4>
+                <skip.suite7>true</skip.suite7>
+                <skip.suite9>true</skip.suite9>
+            </properties>
+        </profile>
+        <!-- All onheap suites -->
+        <profile>
+            <id>all-suites</id>
+            <properties>
+                <skip.suite1>false</skip.suite1>
+                <skip.suite2>false</skip.suite2>
+                <skip.suite3>false</skip.suite3>
+                <skip.suite4>false</skip.suite4>
+                <skip.suite7>false</skip.suite7>
+                <skip.suite9>false</skip.suite9>
+            </properties>
+        </profile>
+        <!-- Individual suites for CI parallelization -->
+        <profile>
+            <id>suite1</id>
+            <properties>
+                <skip.suite1>false</skip.suite1>
+                <skip.suite2>true</skip.suite2>
+                <skip.suite3>true</skip.suite3>
+                <skip.suite4>true</skip.suite4>
+                <skip.suite7>true</skip.suite7>
+                <skip.suite9>true</skip.suite9>
+            </properties>
+        </profile>
+        <profile>
+            <id>suite2</id>
+            <properties>
+                <skip.suite1>true</skip.suite1>
+                <skip.suite2>false</skip.suite2>
+                <skip.suite3>true</skip.suite3>
+                <skip.suite4>true</skip.suite4>
+                <skip.suite7>true</skip.suite7>
+                <skip.suite9>true</skip.suite9>
+            </properties>
+        </profile>
+        <profile>
+            <id>suite3</id>
+            <properties>
+                <skip.suite1>true</skip.suite1>
+                <skip.suite2>true</skip.suite2>
+                <skip.suite3>false</skip.suite3>
+                <skip.suite4>true</skip.suite4>
+                <skip.suite7>true</skip.suite7>
+                <skip.suite9>true</skip.suite9>
+            </properties>
+        </profile>
+        <profile>
+            <id>suite4</id>
+            <properties>
+                <skip.suite1>true</skip.suite1>
+                <skip.suite2>true</skip.suite2>
+                <skip.suite3>true</skip.suite3>
+                <skip.suite4>false</skip.suite4>
+                <skip.suite7>true</skip.suite7>
+                <skip.suite9>true</skip.suite9>
+            </properties>
+        </profile>
+        <profile>
+            <id>suite7</id>
+            <properties>
+                <skip.suite1>true</skip.suite1>
+                <skip.suite2>true</skip.suite2>
+                <skip.suite3>true</skip.suite3>
+                <skip.suite4>true</skip.suite4>
+                <skip.suite7>false</skip.suite7>
+                <skip.suite9>true</skip.suite9>
+            </properties>
+        </profile>
+        <profile>
+            <id>suite9</id>
+            <properties>
+                <skip.suite1>true</skip.suite1>
+                <skip.suite2>true</skip.suite2>
+                <skip.suite3>true</skip.suite3>
+                <skip.suite4>true</skip.suite4>
+                <skip.suite7>true</skip.suite7>
+                <skip.suite9>false</skip.suite9>
+            </properties>
+        </profile>
+    </profiles>
 </project>

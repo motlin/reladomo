@@ -111,6 +111,9 @@
                         </goals>
                         <configuration>
                             <target>
+                                <delete quiet="true">
+                                    <fileset dir="${project.build.directory}/generated-sources/templates" includes="**/*.java"/>
+                                </delete>
                                 <mkdir dir="${project.build.directory}/generated-sources/templates/com/gs/fw/common/mithra/templates"/>
                                 <taskdef name="jasper2" classname="org.apache.jasper.JspC">
                                     <classpath>

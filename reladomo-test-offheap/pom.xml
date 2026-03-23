@@ -268,17 +268,123 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
-                    <argLine>-Xmx3048m -ea -Duser.timezone=America/New_York</argLine>
+                    <argLine>-server -Xmx3048m -ea -Duser.timezone=America/New_York</argLine>
+                    <reuseForks>false</reuseForks>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
+                    <useSystemClassLoader>true</useSystemClassLoader>
+                    <workingDirectory>${project.basedir}/..</workingDirectory>
                     <systemPropertyVariables>
                         <mithra.xml.root>${project.build.outputDirectory}/</mithra.xml.root>
-                        <mithra.xml.config>MithraConfigOffHeapFullCache.xml</mithra.xml.config>
+                        <log4j.configuration>file:${project.build.outputDirectory}/log4jWarn.config</log4j.configuration>
                     </systemPropertyVariables>
-                    <includes>
-                        <include>**/MithraOffHeapTestSuite.java</include>
-                        <include>**/MithraTestSuite.java</include>
-                    </includes>
                 </configuration>
+                <executions>
+                    <!-- Suite 6: OffHeap full cache, MithraTestSuite (default) -->
+                    <execution>
+                        <id>default-test</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite6}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigOffHeapFullCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <!-- Suite 5: OffHeap full cache, MithraMultiVmTestSuite -->
+                    <execution>
+                        <id>suite5</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite5}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigOffHeapFullCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraMultiVmTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <!-- Suite 9 offheap parts -->
+                    <execution>
+                        <id>suite9-offheap</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite9}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigOffHeapFullCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraOffHeapTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>suite9-mastercache</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <skipTests>${skip.suite9}</skipTests>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigMasterCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>**/MithraMultiVmOffHeapTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Default: only suite6 (OffHeapFullCache/MithraTestSuite) runs -->
+        <profile>
+            <id>default-suites</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <skip.suite5>true</skip.suite5>
+                <skip.suite6>false</skip.suite6>
+                <skip.suite9>true</skip.suite9>
+            </properties>
+        </profile>
+        <!-- All offheap suites -->
+        <profile>
+            <id>all-suites</id>
+            <properties>
+                <skip.suite5>false</skip.suite5>
+                <skip.suite6>false</skip.suite6>
+                <skip.suite9>false</skip.suite9>
+            </properties>
+        </profile>
+        <!-- Individual suites for CI -->
+        <profile>
+            <id>suite5</id>
+            <properties>
+                <skip.suite5>false</skip.suite5>
+                <skip.suite6>true</skip.suite6>
+                <skip.suite9>true</skip.suite9>
+            </properties>
+        </profile>
+        <profile>
+            <id>suite6</id>
+            <properties>
+                <skip.suite5>true</skip.suite5>
+                <skip.suite6>false</skip.suite6>
+                <skip.suite9>true</skip.suite9>
+            </properties>
+        </profile>
+        <profile>
+            <id>suite9</id>
+            <properties>
+                <skip.suite5>true</skip.suite5>
+                <skip.suite6>true</skip.suite6>
+                <skip.suite9>false</skip.suite9>
+            </properties>
+        </profile>
+    </profiles>
 </project>

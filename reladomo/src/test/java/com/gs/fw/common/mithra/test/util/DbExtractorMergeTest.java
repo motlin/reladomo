@@ -36,6 +36,7 @@ public class DbExtractorMergeTest extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
+        new java.io.File(DbExtractorTest.OUTPUT_PATH).mkdirs();
 
         this.otherFile = new File(DbExtractorTest.COMPARE_PATH + "DbExtractorMergeTest_other.txt");
         this.mergedFile = new File(DbExtractorTest.OUTPUT_PATH + "DbExtractorMergeTest_target.txt");

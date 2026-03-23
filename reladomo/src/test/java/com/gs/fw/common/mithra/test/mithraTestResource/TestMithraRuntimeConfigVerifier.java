@@ -20,30 +20,41 @@ package com.gs.fw.common.mithra.test.mithraTestResource;
 import com.gs.fw.common.mithra.test.MithraRuntimeConfigVerifier;
 import junit.framework.TestCase;
 
+import java.io.InputStream;
+
 public class TestMithraRuntimeConfigVerifier extends TestCase
 {
 
     public void testPartial() throws Exception
     {
-        MithraRuntimeConfigVerifier verifier = new MithraRuntimeConfigVerifier("reladomo/src/test/resources/MithraConfigPartialCache.xml");
-        verifier.verifyClasses();
+        verifyConfig("MithraConfigPartialCache.xml");
     }
 
     public void testFull() throws Exception
     {
-        MithraRuntimeConfigVerifier verifier = new MithraRuntimeConfigVerifier("reladomo/src/test/resources/MithraConfigFullCache.xml");
-        verifier.verifyClasses();
+        verifyConfig("MithraConfigFullCache.xml");
     }
 
     public void testTablePartition() throws Exception
     {
-        MithraRuntimeConfigVerifier verifier = new MithraRuntimeConfigVerifier("reladomo/src/test/resources/MithraTestTableManagerConfig.xml");
-        verifier.verifyClasses();
+        verifyConfig("MithraTestTableManagerConfig.xml");
     }
 
     public void testClient() throws Exception
     {
-        MithraRuntimeConfigVerifier verifier = new MithraRuntimeConfigVerifier("reladomo/src/test/resources/MithraConfigClientCache.xml");
-        verifier.verifyClasses();
+        verifyConfig("MithraConfigClientCache.xml");
+    }
+
+    private void verifyConfig(String configName) throws Exception
+    {
+        InputStream stream = getClass().getClassLoader().getResourceAsStream(configName);
+        if (stream != null)
+        {
+            new MithraRuntimeConfigVerifier(stream, configName).verifyClasses();
+        }
+        else
+        {
+            new MithraRuntimeConfigVerifier("reladomo/src/test/resources/" + configName).verifyClasses();
+        }
     }
 }

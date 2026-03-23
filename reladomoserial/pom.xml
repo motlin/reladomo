@@ -125,10 +125,28 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <systemPropertyVariables>
-                        <mithra.xml.config>MithraConfigFullCache.xml</mithra.xml.config>
-                    </systemPropertyVariables>
+                    <reuseForks>false</reuseForks>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigFullCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>partial-cache</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <mithra.xml.config>MithraConfigPartialCache.xml</mithra.xml.config>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

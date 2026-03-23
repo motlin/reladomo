@@ -80,7 +80,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <mithra.xml.config>MithraConfigFullCache.xml</mithra.xml.config>
+                        <mithra.xml.config>MithraConfigPartialCache.xml</mithra.xml.config>
                         <mithra.xml.root>${project.basedir}/../reladomo/src/test/resources/</mithra.xml.root>
                     </systemPropertyVariables>
                 </configuration>

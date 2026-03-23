@@ -45,12 +45,23 @@ import com.gs.fw.common.mithra.util.dbextractor.FitnesseRowFormatter;
 public class DbExtractorTest extends TestCase
 {
     private MithraTestResource mithraTestResource;
-    static final String COMPARE_PATH = "reladomo" + File.separator + "src" + File.separator + "test" + File.separator+ "resources" + File.separator+ "testdata" + File.separator;
-    static final String OUTPUT_PATH = "reladomo" + File.separator + "target" + File.separator + "tmp" + File.separator;
+    static final String COMPARE_PATH = resolveResourceDir("testdata/");
+    static final String OUTPUT_PATH = "target" + File.separator + "tmp" + File.separator;
+
+    private static String resolveResourceDir(String resourcePath)
+    {
+        java.net.URL url = DbExtractorTest.class.getClassLoader().getResource(resourcePath);
+        if (url != null && "file".equals(url.getProtocol()))
+        {
+            return url.getPath();
+        }
+        return "reladomo" + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator + resourcePath.replace('/', File.separatorChar);
+    }
 
     protected void setUp() throws Exception
     {
         super.setUp();
+        new File(OUTPUT_PATH).mkdirs();
         String xmlFile = System.getProperty("mithra.xml.config");
 
         mithraTestResource = new MithraTestResource(xmlFile);

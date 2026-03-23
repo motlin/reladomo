@@ -59,8 +59,18 @@ public class MithraObjectGraphExtractorTest extends TestCase implements Extracto
     private int extractThreshold = 10;
     private boolean isFixedBusinessDate = true;
     private boolean isFixedProcessingDate = true;
-    static final String SOURCE_DIR = "reladomo" + File.separator + "src" + File.separator + "test" + File.separator+ "resources" + File.separator+ "testdata" + File.separator+ "objectgraph" + File.separator;
-    static final String TARGET_DIR = "reladomo" + File.separator + "target" + File.separator + "tmp" + File.separator;
+    static final String SOURCE_DIR = resolveResourceDir("testdata/objectgraph/");
+    static final String TARGET_DIR = "target" + File.separator + "tmp" + File.separator;
+
+    private static String resolveResourceDir(String resourcePath)
+    {
+        java.net.URL url = MithraObjectGraphExtractorTest.class.getClassLoader().getResource(resourcePath);
+        if (url != null && "file".equals(url.getProtocol()))
+        {
+            return url.getPath();
+        }
+        return "reladomo" + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator + resourcePath.replace('/', File.separatorChar);
+    }
     private File extractFile;
     private Set<RelatedFinder> nullOutputFiles = UnifiedSet.newSet();
     private boolean overwriteOutputFile = true;
@@ -68,6 +78,7 @@ public class MithraObjectGraphExtractorTest extends TestCase implements Extracto
     protected void setUp() throws Exception
     {
         super.setUp();
+        new File(TARGET_DIR).mkdirs();
 
         mithraTestResource = new MithraTestResource(System.getProperty("mithra.xml.config"));
 
