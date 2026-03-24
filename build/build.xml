@@ -669,6 +669,7 @@
     </target>
 
     <target name="run-reladomo-graphql-test-suite" depends="compile-reladomo-graphql-test, compile-reladomo-test" description="Run JUnit test cases for Reladomo GraphQL module">
+        <property name="jacocovmarg" value="-Dcoverage=none"/>
         <delete quiet="true" dir="${root}/reladomographql/target/testresult"/>
         <mkdir dir="${root}/reladomographql/target/testresult"/>
         <tstamp>
@@ -681,6 +682,7 @@
                 <formatter type="xml" extension="junit"/>
                 <formatter classname="com.gs.fw.common.mithra.test.JunitFormatter" extension="junit.txt"/>
                 <classpath>
+                    <fileset refid="fileset.build.lib"/>
                     <path refid="reladomo.run.test.classpath"/>
                     <path refid="reladomo.test.compile.classpath"/>
                     <path refid="reladomographql.test.compile.classpath"/>
@@ -689,6 +691,7 @@
                     <pathelement location="${root}/reladomo/target/test-util-classes"/>
                     <pathelement location="${root}/reladomographql/target/classes"/>
                     <pathelement location="${root}/reladomographql/target/test-classes"/>
+                    <pathelement location="${root}/reladomographql/src/test/resources"/>
                 </classpath>
                 <jvmarg value="-server"/>
                 <jvmarg value="${jacocovmarg}${root}/reladomographql/target/coverage/junit-tests.exec"/>
@@ -698,8 +701,8 @@
                 <jvmarg value="-Dmithra.xml.root=${root}/reladomographql/src/test/resources/"/>
                 <jvmarg value="-Djacoco.args=${jacocovmarg}${root}/reladomographql/target/coverage/jacoco/junit-tests.exec"/>
                 <jvmarg value="-Duser.timezone=America/New_York"/>
-                <batchtest>
-                    <fileset dir="${root}/reladomographql/target/test-classes" includes="**/*Test.java" />
+                <batchtest todir="${root}/reladomographql/target/testresult">
+                    <fileset dir="${root}/reladomographql/target/test-classes" includes="**/*Test.class" />
                 </batchtest>
             </junit>
         </sequential>

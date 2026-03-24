@@ -76,6 +76,10 @@ central,org.apache.geronimo.specs,geronimo-jms_1.1_spec,1.1.1,jar,lib/xa,C872B46
 #graphql
 central,javax.servlet,javax.servlet-api,3.0.1,jar,lib/graphql,6BF0EBB7EFD993E222FC1112377B5E92A13B38DD
 central,com.graphql-java,graphql-java,13.0,jar,lib/graphql,F3D5C387CF09A13922F719FC984E7B6CBF2A3CCF
+central,org.antlr,antlr4-runtime,4.7.2,jar,lib/graphql,E27D8AB4F984F9D186F54DA984A6AB1CCCAC755E
+central,com.graphql-java,java-dataloader,2.1.1,jar,lib/graphql,2AC1E4F0764030853195BF89EB4BD0BBE2151EB2
+central,org.reactivestreams,reactive-streams,1.0.2,jar,lib/graphql,323964C36556EB0E6209F65C1CEF72B53B461AB8
+central,com.fasterxml.jackson.core,jackson-annotations,2.13.1,jar,lib/graphql,1CBCBE4623113E6AF92CCAA89884A345270F1A87
 central,com.graphql-java-kickstart,graphql-java-servlet,8.0.0,jar,lib/graphql,F0FEE2A1DD3715EE93473A54FA93F7CFDFC24E46
 central,com.graphql-java,graphql-java-extended-scalars,1.0,jar,lib/graphql,D798F4D543331B26E5E0B359D84D775F66B0E3E0
 central,org.skyscreamer,jsonassert,1.5.0,jar,lib/test,6C9D5FE2F59DA598D9AEFC1CFC6528FF3CF32DF3
