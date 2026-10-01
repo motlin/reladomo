@@ -372,7 +372,18 @@ public class TestCache extends TestCase
 
     public void testPartialCacheWithParaDeskWithRelationshipExpiration()
     {
-        long start = System.currentTimeMillis();
+        int count = 0;
+        while(!tryPartialCacheWithParaDeskWithRelationshipExpiration() && count < 10)
+        {
+            count++;
+        }
+        assertTrue(count < 10);
+    }
+
+    public boolean tryPartialCacheWithParaDeskWithRelationshipExpiration()
+    {
+        CacheClock.forceTick();
+        long start = CacheClock.getTime();
         long timeToLive = 200;
         PartialNonDatedCache partialCache = createPartialParaDeskCache(timeToLive, timeToLive);
 
@@ -399,13 +410,15 @@ public class TestCache extends TestCase
         List list1 = partialCache.get(sizeRef, 101.0);
         List list2 = partialCache.get(tagRef, 1010);
         List list3 = partialCache.get(deskConRef, 1010L);
-        if (System.currentTimeMillis() < start + timeToLive)
+        CacheClock.forceTick();
+        if (!(CacheClock.getTime() < start + timeToLive))
         {
-            assertSame(paraDesk0, paraDesk1);
-            assertEquals(101.0, ((ParaDesk)list1.get(0)).getSizeDouble(), 0.0);
-            assertEquals(1010, ((ParaDesk)list2.get(0)).getTagInt());
-            assertEquals(1010L, ((ParaDesk)list3.get(0)).getConnectionLong());
+            return false;
         }
+        assertSame(paraDesk0, paraDesk1);
+        assertEquals(101.0, ((ParaDesk)list1.get(0)).getSizeDouble(), 0.0);
+        assertEquals(1010, ((ParaDesk)list2.get(0)).getTagInt());
+        assertEquals(1010L, ((ParaDesk)list3.get(0)).getConnectionLong());
         sleep(timeToLive + 100);
         CacheClock.forceTick();
         assertSame(paraDesk0, partialCache.getObjectFromData(createParaDeskData(1, 1)));
@@ -413,6 +426,7 @@ public class TestCache extends TestCase
         assertEquals(0, partialCache.get(sizeRef, 101.0).size());
         assertEquals(0, partialCache.get(tagRef, 1010).size());
         assertEquals(0, partialCache.get(deskConRef, 1010L).size());
+        return true;
     }
 
     private PartialNonDatedCache createPartialParaDeskCache(long timeToLive, long relTimeToLive)
