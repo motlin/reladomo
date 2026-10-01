@@ -375,7 +375,8 @@ public class TestMultiClientNotificationTestCase extends RemoteMithraClientTestC
     {
         //Insert initial balance for balance id 999 of 100.00 on 1/1/2005
         int updateClassCount = TinyBalanceFinder.getMithraObjectPortal().getPerClassUpdateCountHolder().getUpdateCount();
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        // processing dates are clamped down to 10ms, so stay strictly before the clamped time of any later transaction
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis() / 10 * 10 - 1);
         Timestamp businessDate0 = new Timestamp(timestampFormat.parse("2005-12-05 12:00:00.0").getTime());
         Timestamp businessDate1 = new Timestamp(timestampFormat.parse("2005-12-12 12:00:00.0").getTime());
         Timestamp businessDate2 = new Timestamp(timestampFormat.parse("2005-12-16 12:00:00.0").getTime());
