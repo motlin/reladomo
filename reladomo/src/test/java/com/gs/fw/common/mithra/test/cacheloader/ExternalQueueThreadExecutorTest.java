@@ -124,11 +124,11 @@ public class ExternalQueueThreadExecutorTest extends TestCase
         assertEquals(2, threadPool.getAbandonedCountForTest());
         completedTasks= new CountDownLatch(2);
         delayedRelease.countDown();
-        completedTasks.await(10, TimeUnit.MILLISECONDS);
-        Thread.sleep(20); // race
+        completedTasks.await(10, TimeUnit.SECONDS);
 
         for (Thread each: threads)
         {
+            each.join(10000);
             assertFalse(each.isAlive());
         }
     }
